@@ -1,8 +1,10 @@
 #include "normal_mode.h"
-
+#include "LS_cmd.h"
 using namespace std;
 
 struct termios c_mode;
+
+
 
 void enter_normal_mode() {
   //tcgetattr(STDIN_FILENO,&struct termios) , STDIN_FILENO=0
@@ -14,6 +16,8 @@ void enter_normal_mode() {
 
   //tcsetattr(STDIN_FILENO,TCSANOW,&struct termios)
   tcsetattr(0, TCSANOW, &n_mode);
+
+  LS_cmd();
 
   //atexit(exit_normal_mode);
      
