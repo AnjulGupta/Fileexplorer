@@ -1,0 +1,166 @@
+--------------------------------
+TERMINAL BASED FILE EXPLORER->
+--------------------------------
+
+1> introduction?
+- File Explorer is a file browser(or manager) used to navigate and manage the folders, and files on your computer. 
+------
+2> architecture?
+-two modes-
+A.Normal mode-
+The program starts in normal mode and lists the files in directory where it is started.(That becomes the root/home address)
+B.Command mode- (User can switch to Command Mode with the ':' key )
+
+-----
+
+
+3> HOW IMPLEMENTED (APPPROACH - modular with clear steps) ?
+-> points 4.
+
+->a. The folder in which program is started is made as root
+  getcwd()-to get current folder path and store it in a rootpath variable
+
+->b. run in non cannonical mode(normal mode)
+non-canonical-eg vi editor, you press a character and it is immediately available to the program. 
+
+	tcgetattr(0,&initSettings);
+	newSettings=initSettings;
+	~ICANON, ~ECHO;
+	tcsetattr(0,TCSANOW,&newSettings);
+
+->c. list all files and folders in current path
+	struct dirent* entry;opendir(),readdir(),closedir()
+ 	struct stat fileInfo;
+
+ 	using above functions , all files and folders are listed as seen in linux terminal on ls command.
+
+->d. move cursor up/down on screen
+	and functions to be executed on pressing a keyboard button (like enter, left arrow).
+
+-> On pressing the ':' key, we enter the command mode.
+	we can type the various file commands like create,copy,move,delete files and directories. 
+
+------
+
+4> functions implemented?
+-two modes-
+A.Normal mode-
+The program starts in normal mode and lists the files in directory where it is started.(That becomes the root/home address)
+
+On pressing:
+1.Enter: Open a directory in normal mode
+	Open a file in its default application
+
+2.BackSpace key: Go up one level in the explorer but not beyond the root path
+
+3.Left Arrow: Go back to the previously visited directory if its possible
+
+4.Right Arrow: Go forward to the directory where user went by pressing back key
+
+5.Up/Down Arrow: move the cursor to navigate in the explorer (By default the program displays 10 files, if there are more than 10 files than user can view by scrolling with these keys)
+
+8.'h' key: Go to Home Directory
+
+6.'q': It quits the program
+
+7.':': Switch to command mode
+
+B.Command mode- (User can switch to Command Mode with the ':' key )
+Assumptions:
+The source file/path should be always given as full name of file/directory without any '/' character for example your directory structure is ~/abc/xyz/def/foo.txt and your program started in abc then abc becomes root directory for the program lifetime and thus,The destination path can take two kind of values:
+Absolute Path(Path from the root/home): It must begin with '~/' for example ~/abc/xyz/def/foo.txt
+Relative Path(Path from the current directory): It must begin with '/' for example if you are in xyz then /def/foo.txt
+Some Commands like create_file supports '.' as destination path
+
+
+commands implemented:
+1.	Copy File(s):			copy <source_file(s)> <destination_directory>
+	Copy Directory(s): 		copy_dir <source_file(s)> <destination_directory>
+
+2.	Create File(s):			create_file <source_file(s)> <destination_directory>		
+	Create Directory(s):	create_file <source_file(s)> <destination_directory>
+
+3.	Move File(s):			move <source_file(s)> <destination_directory>
+	Move Directory(s): 		move_dir <source_file(s)> <destination_directory>
+
+4.	Delete File(s): 		delete_file <file_path>
+	Delete Directory(s): 	del_dir <source_file(s)> <destination_directory>
+
+5.	Rename File(s):			rename <old_filename> <new_filename>
+	Rename Directory
+
+6.	Search Files:			search <source_file>
+		All files in the working tree will be displayed on the same screen
+7.	Goto Directory:			goto <directory_path>
+		program will come in normal mode to explore the directory
+8.	Snapshot:				snapshot <directory_path> <dumpfile>
+9.	exit:	program will come to normal mode
+
+
+--------
+
+Q. How keys are mapped to function as move up/down etc ?
+
+
+
+---------
+Q.How commands are implemented?
+
+1. Search() 
+- created search function with parameters userinput filename, curdir
+- recursively search each subdirectroy of the curdir, if filename found push the file with path in a vector
+- display vector elements 
+
+2. move_dir()
+-move directorie(s) to a single destination directory
+-if ~ is used in command (for taking relative destination path from curdir), addroot path and convert to absolute destination path and then for each source file, make a string dest+source as absolute file path for about to move directory.
+-Call copy_dir function with param (srcdir path, destdirpath), it will recursively copy each file and subdir for destdir in its given path.
+- call delete_dir function with param (srcdirpath), it will remove recursively each sub dir/files from the src dir and then src dir. (rmdir and unlink)
+
+3. del_dir()
+- if relative path given(~) -convert to absolute path. 
+- call delete_dir function with param (srcdirpath), it will remove recursively each sub dir/files from the src dir and then src dir. (rmdir and unlink)
+
+4. create file(s)() , create directorie(s)()->
+- if createfile,  use open() with given filename at dest path
+-if create dir, use mkdir() at dest path
+
+5. rename()
+- use rename() 
+
+
+
+
+--------
+(?????)
+10> how real file explorer works?
+-Most OS have a GUI for file explorer. 
+-cursor library functions
+-I implemented using system calls
+
+------- 
+
+
+-----------------------------
+QUESTIONS
+
+
+3> which data structures used n why?
+5> challenging task , how accomplished it?
+6> difficulties faced n overcome?
+7> applications
+8> what you learn from it?
+9> extension n future scope?
+11> how is your FE different from it?
+
+--------------------------------
+
+
+-> Difference between canonical mode and non-canonical mode-
+canonical-
+eg shell, you type a input line and if you make a mistake you can edit it until the end of line character is not pressed(enter key).then only whole line is made available to waiiting programs.
+
+non-canonical-
+eg vi editor, you press a character and it is immediately available to the program. 
+
+-----------------------------
